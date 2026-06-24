@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "HeartSync 💕 — Couples Quiz Game",
+  title: "HeartSync 💕 — ISHA ARHAM QUIZ GAME",
   description:
-    "A real-time cross-device trivia game for couples. Test how well you know each other with HeartSync!",
+    "A GAME JISSAY INSHA'ALLAH LARAI NHI HOGI",
 };
 
 export default function RootLayout({
