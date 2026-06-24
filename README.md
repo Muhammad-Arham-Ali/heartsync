@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# 💌 HeartSync: A Cross-Device Couples Quiz Game
 
-## Getting Started
+A real-time, responsive multiplayer web app designed for couples to test how well they know each other. Built with a mobile-first approach, this game allows partners to connect via a unique "Room Code" across different devices, taking turns creating and guessing custom 4-option trivia questions.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* **Real-Time Multiplayer:** Instant state synchronization across devices so both partners see the action unfold simultaneously without needing to refresh.
+* **Room-Based Matchmaking:** Generate a unique, themed room code (e.g., `PINK-BEAR`) to securely pair two devices together.
+* **Alternating Game Loop:** The game automatically manages state, seamlessly swapping the "Creator" and "Guesser" roles after every round.
+* **Couple-Coded UI:** A fully responsive, pastel-themed interface featuring soft shadows, pill-shaped interactive elements, and bouncy animations for a "cute" aesthetic.
+* **Persistent Scoreboard:** A beautifully integrated, always-visible tracker to keep a running tally of who really knows who best.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* **Frontend:** [Next.js](https://nextjs.org/) (React framework for robust routing and fast performance)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/) (Rapid, utility-first styling for our custom pastel theme)
+* **Backend / Database:** [Firebase Realtime Database](https://firebase.google.com/) (For instant, low-latency syncing of game states)
+* **Hosting:** Vercel / Firebase Hosting
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing.
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* Node.js (v18+ recommended for Ubuntu/Linux environments)
+* npm or yarn
+* A free [Firebase Console](https://console.firebase.google.com/) account
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/yourusername/heartsync-quiz.git](https://github.com/yourusername/heartsync-quiz.git)
+   cd heartsync-quiz
