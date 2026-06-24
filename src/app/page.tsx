@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { db } from "../lib/firebase";
 import { ref, set, update, onValue, off, get } from "firebase/database";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +17,7 @@ interface RoomData {
   gameState: GameState;
   currentQuestion?: { text: string; options: string[]; correctIndex: number };
   lastGuess?: { index: number; isCorrect: boolean };
+  resultShownAt?: number;
 }
 
 /* ─── Cute room-code words ─── */
@@ -172,6 +173,43 @@ export default function Home() {
   const [selectedGuess, setSelectedGuess] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
 
+  // Result timer: prevents moving to next round for 10 seconds
+  const [resultCountdown, setResultCountdown] = useState(0);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  /* ─── Start countdown when RESULT state appears ─── */
+  useEffect(() => {
+    if (roomData?.gameState === "RESULT" && roomData.resultShownAt) {
+      const elapsed = Math.floor((Date.now() - roomData.resultShownAt) / 1000);
+      const remaining = Math.max(0, 10 - elapsed);
+      setResultCountdown(remaining);
+
+      if (remaining > 0) {
+        countdownRef.current = setInterval(() => {
+          setResultCountdown((prev) => {
+            if (prev <= 1) {
+              if (countdownRef.current) clearInterval(countdownRef.current);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+
+      return () => {
+        if (countdownRef.current) clearInterval(countdownRef.current);
+      };
+    }
+  }, [roomData?.gameState, roomData?.resultShownAt]);
+
+  /* ─── Reset local guessing state on every new round (for BOTH players) ─── */
+  useEffect(() => {
+    if (roomData?.gameState === "CREATING" || roomData?.gameState === "GUESSING") {
+      setSelectedGuess(null);
+      setShowConfetti(false);
+    }
+  }, [roomData?.gameState]);
+
   /* ─── Firebase listener ─── */
   useEffect(() => {
     if (!roomId) return;
@@ -245,6 +283,7 @@ export default function Home() {
       await update(ref(db, `rooms/${roomId}`), {
         lastGuess: { index, isCorrect },
         gameState: "RESULT",
+        resultShownAt: Date.now(),
         [`scores/${guesserRole}`]: newScore,
       });
     },
@@ -254,15 +293,22 @@ export default function Home() {
   /* ─── Next Round ─── */
   const nextRound = useCallback(async () => {
     if (!roomData) return;
+    // Don't allow next round until countdown expires
+    if (roomData.resultShownAt) {
+      const elapsed = Math.floor((Date.now() - roomData.resultShownAt) / 1000);
+      if (elapsed < 10) return;
+    }
     const nextTurn = roomData.currentTurn === "player1" ? "player2" : "player1";
     await update(ref(db, `rooms/${roomId}`), {
       currentTurn: nextTurn,
       gameState: "CREATING",
       currentQuestion: null,
       lastGuess: null,
+      resultShownAt: null,
     });
     setSelectedGuess(null);
     setShowConfetti(false);
+    setResultCountdown(0);
   }, [roomData, roomId]);
 
   /* ─── Copy room code ─── */
@@ -300,7 +346,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative flex-1 flex flex-col items-center justify-center px-4 py-8 z-10 min-h-screen">
+    <main className="relative flex-1 flex flex-col items-center justify-center px-4 py-12 pb-20 z-10 min-h-screen">
       <FloatingHearts />
       {showConfetti && <ConfettiBurst />}
 
@@ -620,9 +666,25 @@ export default function Home() {
                 {...bounceBtn}
                 id="next-round-btn"
                 onClick={nextRound}
-                className="w-full rounded-full py-3.5 mt-2 bg-gradient-to-r from-rose-400 to-pink-500 text-white font-extrabold shadow-lg shadow-pink-300/40 flex items-center justify-center gap-2"
+                disabled={resultCountdown > 0}
+                className={`w-full rounded-full py-3.5 mt-2 text-white font-extrabold shadow-lg shadow-pink-300/40 flex items-center justify-center gap-2 transition-all ${
+                  resultCountdown > 0
+                    ? "bg-gradient-to-r from-pink-300 to-pink-400 cursor-not-allowed opacity-70"
+                    : "bg-gradient-to-r from-rose-400 to-pink-500"
+                }`}
               >
-                Next Round <ArrowRight className="w-4 h-4" />
+                {resultCountdown > 0 ? (
+                  <>
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/30 text-xs font-black">
+                      {resultCountdown}
+                    </span>
+                    Review the answer... 💭
+                  </>
+                ) : (
+                  <>
+                    Next Round <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </motion.button>
             </div>
           </motion.div>
