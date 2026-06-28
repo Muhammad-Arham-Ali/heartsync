@@ -71,4 +71,5 @@ Follow these instructions to get a copy of the project up and running on your lo
    ```
 
 5. **Play:**
+   https://heartsync-vr5o.vercel.app/
    Open [http://localhost:3000](http://localhost:3000) in your browser. Open it in a second window or device to join as player 2!
